@@ -16,7 +16,7 @@
         #endregion
 
         #region Error Messages
-        public const string ERROR_ADD = "Error in adding {0} record.";
+        public const string ERROR_INSERT = "Error in inserting {0} record.";
         public const string ERROR_UPDATE = "Error in updating {0} record.";
         public const string ERROR_REQUEST_NULL = "{0} Request cannot be NULL.";
         public const string ERROR_MODEL_NULL = "{0} cannot be NULL.";
@@ -25,6 +25,8 @@
 
         #region Models
         public const string MODEL_STUDENT = "Student";
+        public const string MODEL_CONTACTS = "Contacts";
+        public const string MODEL_ADDRESSES = "Addresses";
         #endregion
     }
 }

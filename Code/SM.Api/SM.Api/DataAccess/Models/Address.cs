@@ -6,7 +6,7 @@ namespace SM.Api.DataAccess.Models
     {
         [Key]
         public Guid InternalID { get; set; }
-        public Guid Student_InternalID { get; set; }
+        public Guid RelationID { get; set; }
         public int Type { get; set; }
         [Required, MaxLength(50)]
         public string Line1 { get; set; }
