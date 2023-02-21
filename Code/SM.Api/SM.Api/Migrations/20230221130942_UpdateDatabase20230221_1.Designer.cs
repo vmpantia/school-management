@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SM.Api.DataAccess;
 
@@ -11,9 +12,11 @@ using SM.Api.DataAccess;
 namespace SM.Api.Migrations
 {
     [DbContext(typeof(SMDbContext))]
-    partial class SMDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230221130942_UpdateDatabase20230221_1")]
+    partial class UpdateDatabase20230221_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

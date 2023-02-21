@@ -1,13 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
-namespace SM.Api.DataAccess.Models
+namespace SM.Api.DataAccess.Models.Transaction
 {
-    public class Teacher
+    [PrimaryKey(nameof(RequestID), nameof(Number), nameof(InternalID))]
+    public class Student_TRN
     {
-        [Key]
+        [MaxLength(15)]
+        public string RequestID { get; set; }
+        public int Number { get; set; }
         public Guid InternalID { get; set; }
         [Required, MaxLength(15)]
-        public string TeacherID { get; set; }
+        public string StudentID { get; set; }
         [Required, MaxLength(25)]
         public string FirstName { get; set; }
         [MaxLength(25)]

@@ -29,14 +29,22 @@ namespace SM.Api.Services
             {
                 try
                 {
-                    await InsertStudentAsync(request.inputStudent);
-                    await _common.InsertContactsAsync(_db, request.inputStudent.InternalID, request.inputContacts);
-                    await _common.InsertAddressesAsync(_db, request.inputStudent.InternalID, request.inputAddresses);
+                    var requestID = _common.InsertRequestAsync(_db, request);
+                    switch(request.FunctionID)
+                    {
+                        case Constants.FUNCTION_ID_ADD_STUDENT:
+                            await InsertStudentAsync(request.inputStudent);
+                            await _common.InsertContactsAsync(_db, request.inputStudent.InternalID, request.inputContacts);
+                            await _common.InsertAddressesAsync(_db, request.inputStudent.InternalID, request.inputAddresses);
+                            break;
 
-                    //await UpdateStudentAsync(request.inputStudent);
-                    //await _common.UpdateContactsAsync(_db, request.inputStudent.InternalID, request.inputContacts);
-                    //await _common.UpdateAddressesAsync(_db, request.inputStudent.InternalID, request.inputAddresses);
+                        case Constants.FUNCTION_ID_CHANGE_STUDENT:
+                            await UpdateStudentAsync(request.inputStudent);
+                            await _common.UpdateContactsAsync(_db, request.inputStudent.InternalID, request.inputContacts);
+                            await _common.UpdateAddressesAsync(_db, request.inputStudent.InternalID, request.inputAddresses);
+                            break;
 
+                    }
                     await transaction.CommitAsync();
                 }
                 catch (Exception ex)
@@ -54,7 +62,7 @@ namespace SM.Api.Services
 
             stud.InternalID = Guid.NewGuid();
             stud.StudentID = await GenerateStudentIDAsync();
-            stud.CreatedDate = Globals.EXEC_DATE;
+            stud.CreatedDate = Globals.EXEC_DATETIME;
             stud.ModifiedDate = null;
 
             await _db.Students.AddAsync(stud);
@@ -82,7 +90,7 @@ namespace SM.Api.Services
             currStud.Birthdate = stud.Birthdate;
             currStud.Status = stud.Status;
             //currStud.CreatedDate = stud.CreatedDate;
-            currStud.ModifiedDate = Globals.EXEC_DATE;
+            currStud.ModifiedDate = Globals.EXEC_DATETIME;
 
             var result = await _db.SaveChangesAsync();
             if (result == 0)
@@ -91,16 +99,17 @@ namespace SM.Api.Services
 
         private async Task<string> GenerateStudentIDAsync()
         {
-            var studentIDs = await _db.Students.OrderByDescending(data => data.StudentID)
+            var studentIDs = await _db.Students.Where(data => data.CreatedDate.Year == Globals.EXEC_YEAR)
+                                               .OrderByDescending(data => data.StudentID)
                                                .Select(data => data.StudentID)
                                                .ToListAsync();
 
             if (!studentIDs.Any())
-                return string.Format(Constants.FORMAT_STUDENT_ID, Constants.DEFAULT_ID_SUFFIX);
+                return string.Format(Constants.FORMAT_STUDENT_ID, Globals.EXEC_YEAR, Constants.DEFAULT_UNQ_ID_SUFFIX);
 
             var latestStudentID = studentIDs.First();
-            var currentSuffix = latestStudentID.Substring(Constants.LENGTH_ID_PREFIX, Constants.LENGTH_ID_SUFFIX);
-            var newSuffix = (int.Parse(currentSuffix) + 1).ToString().PadLeft(Constants.LENGTH_ID_SUFFIX, Constants.CHAR_ZERO);
+            var currentSuffix = latestStudentID.Substring(Constants.LENGTH_UNQ_ID_PREFIX, Constants.LENGTH_UNQ_ID_SUFFIX);
+            var newSuffix = (int.Parse(currentSuffix) + 1).ToString().PadLeft(Constants.LENGTH_UNQ_ID_SUFFIX, Constants.CHAR_ZERO);
 
             return string.Format(Constants.FORMAT_STUDENT_ID, newSuffix);
         }

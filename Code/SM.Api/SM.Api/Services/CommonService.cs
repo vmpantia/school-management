@@ -4,6 +4,7 @@ using SM.Api.Contractors;
 using SM.Api.DataAccess;
 using SM.Api.DataAccess.Models;
 using SM.Api.Exceptions;
+using SM.Api.Models.Requests;
 
 namespace SM.Api.Services
 {
@@ -20,7 +21,7 @@ namespace SM.Api.Services
             {
                 contact.InternalID = Guid.NewGuid();
                 contact.RelationID = relationID;
-                contact.CreatedDate = DateTime.Now;
+                contact.CreatedDate = Globals.EXEC_DATETIME;
                 contact.ModifiedDate = null;
 
                 await db.Contacts.AddAsync(contact);
@@ -53,7 +54,7 @@ namespace SM.Api.Services
                     currContact.Value = contact.Value;
                     currContact.Status = contact.Status;
                     //currContact.CreatedDate = contact.CreatedDate;
-                    currContact.ModifiedDate = Globals.EXEC_DATE;
+                    currContact.ModifiedDate = Globals.EXEC_DATETIME;
                 }
                 else
                 {
@@ -81,7 +82,7 @@ namespace SM.Api.Services
             {
                 address.InternalID = Guid.NewGuid();
                 address.RelationID = relationID;
-                address.CreatedDate = DateTime.Now;
+                address.CreatedDate = Globals.EXEC_DATETIME;
                 address.ModifiedDate = null;
 
                 await db.Addresses.AddAsync(address);
@@ -120,7 +121,7 @@ namespace SM.Api.Services
                     currAddress.Country = address.Country;
                     currAddress.Status = address.Status;
                     //currAddress.CreatedDate = address.CreatedDate;
-                    currAddress.ModifiedDate = Globals.EXEC_DATE;
+                    currAddress.ModifiedDate = Globals.EXEC_DATETIME;
                 }
                 else
                 {
@@ -135,6 +136,47 @@ namespace SM.Api.Services
 
             if (result == addresses.Count())
                 throw new APIException(string.Format(Constants.ERROR_UPDATE, Constants.MODEL_ADDRESSES));
+        }
+
+        public async Task<string> InsertRequestAsync(SMDbContext db, RequestBase requestInfo)
+        {
+            var newRequest = new Request
+            {
+                RequestID = await GetNewRequestIDAsync(db),
+                FunctionID = requestInfo.FunctionID,
+                RequestDate = Globals.EXEC_DATE,
+                RequestBy = requestInfo.UserID,
+                ApprovedDate = null,
+                ApprovedBy = null,
+                Status = requestInfo.RequestStatus,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = null
+            };
+
+            await db.Requests.AddAsync(newRequest);
+
+            var result = await db.SaveChangesAsync();
+            if (result == 0)
+                throw new APIException(string.Format(Constants.ERROR_INSERT, Constants.MODEL_REQUEST));
+
+            return newRequest.RequestID;
+        }
+
+        private async Task<string> GetNewRequestIDAsync(SMDbContext db)
+        {
+            var requestIDs = await db.Requests.Where(data => data.RequestDate == Globals.EXEC_DATE)
+                                                 .OrderByDescending(data => data.RequestID)
+                                                 .Select(data => data.RequestID)
+                                                 .ToListAsync();
+
+            if (!requestIDs.Any())
+                return string.Format(Constants.FORMAT_REQUEST_ID, Globals.EXEC_REQ_DATE, Constants.DEFAULT_REQ_ID_SUFFIX);
+
+            var latestRequestID = requestIDs.First();
+            var currentSuffix = latestRequestID.Substring(Constants.LENGTH_REQ_ID_PREFIX, Constants.LENGTH_REQ_ID_SUFFIX);
+            var newSuffix = (int.Parse(currentSuffix) + 1).ToString().PadLeft(Constants.LENGTH_REQ_ID_SUFFIX, Constants.CHAR_ZERO);
+
+            return string.Format(Constants.FORMAT_REQUEST_ID, Globals.EXEC_REQ_DATE, newSuffix);
         }
     }
 }
