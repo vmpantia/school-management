@@ -19,12 +19,12 @@ namespace SM.Api.Controllers
         {
             try
             {
-                await _student.SaveStudent(request);
-                return Ok();
+                var response = await _student.SaveStudent(request);
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return Conflict(ex);
+                return Conflict(ex.Message);
             }
         }
     }

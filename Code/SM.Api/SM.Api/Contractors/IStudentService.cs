@@ -4,6 +4,6 @@ namespace SM.Api.Contractors
 {
     public interface IStudentService
     {
-        Task SaveStudent(SaveStudentRequest request);
+        Task<string> SaveStudent(SaveStudentRequest request);
     }
 }

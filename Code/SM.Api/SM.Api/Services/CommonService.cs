@@ -3,6 +3,7 @@ using SM.Api.Commons;
 using SM.Api.Contractors;
 using SM.Api.DataAccess;
 using SM.Api.DataAccess.Models;
+using SM.Api.DataAccess.Models.Transaction;
 using SM.Api.Exceptions;
 using SM.Api.Models.Requests;
 
@@ -29,7 +30,7 @@ namespace SM.Api.Services
                 result += await db.SaveChangesAsync();
             }
 
-            if (result == 0)
+            if (result != contacts.Count())
                 throw new APIException(string.Format(Constants.ERROR_INSERT, Constants.MODEL_CONTACTS));
         }
 
@@ -67,8 +68,41 @@ namespace SM.Api.Services
                 result += await db.SaveChangesAsync();
             }
 
-            if (result == contacts.Count())
+            if (result != contacts.Count())
                 throw new APIException(string.Format(Constants.ERROR_UPDATE, Constants.MODEL_CONTACTS));
+        }
+
+        public async Task InsertContacts_TRNAsync(SMDbContext db, List<Contact> contacts, string requestID)
+        {
+            if (contacts == null)
+                throw new APIException(string.Format(Constants.ERROR_MODEL_NULL, Constants.MODEL_CONTACTS));
+
+            int result = 0, number = 1;
+
+            foreach (var contact in contacts)
+            {
+                var trn = new Contact_TRN
+                {
+                    RequestID = requestID,
+                    Number = number,
+                    InternalID = contact.InternalID,
+                    RelationID = contact.RelationID,
+                    Type = contact.Type,
+                    Value = contact.Value,
+                    Status = contact.Status,
+                    CreatedDate = contact.CreatedDate,
+                    ModifiedDate = contact.ModifiedDate
+                };
+
+                await db.Contact_TRN.AddAsync(trn);
+
+                result += await db.SaveChangesAsync();
+
+                number++;
+            }
+
+            if (result != contacts.Count())
+                throw new APIException(string.Format(Constants.ERROR_INSERT, Constants.MODEL_CONTACTS_TRN));
         }
 
         public async Task InsertAddressesAsync(SMDbContext db, Guid relationID, List<Address> addresses)
@@ -90,7 +124,7 @@ namespace SM.Api.Services
                 result += await db.SaveChangesAsync();
             }
 
-            if (result == 0)
+            if (result != addresses.Count())
                 throw new APIException(string.Format(Constants.ERROR_INSERT, Constants.MODEL_ADDRESSES));
         }
 
@@ -134,8 +168,47 @@ namespace SM.Api.Services
                 result += await db.SaveChangesAsync();
             }
 
-            if (result == addresses.Count())
+            if (result != addresses.Count())
                 throw new APIException(string.Format(Constants.ERROR_UPDATE, Constants.MODEL_ADDRESSES));
+        }
+
+        public async Task InsertAddress_TRNAsync(SMDbContext db, List<Address> addresses, string requestID)
+        {
+            if (addresses == null)
+                throw new APIException(string.Format(Constants.ERROR_MODEL_NULL, Constants.MODEL_ADDRESSES));
+
+            int result = 0, number = 1;
+
+            foreach (var address in addresses)
+            {
+                var trn = new Address_TRN
+                {
+                    RequestID = requestID,
+                    Number = number,
+                    InternalID = address.InternalID,
+                    RelationID = address.RelationID,
+                    Type = address.Type,
+                    Line1 = address.Line1,
+                    Line2 = address.Line2,
+                    Barangay = address.Barangay,
+                    City = address.City,
+                    ZipCode = address.ZipCode,
+                    Province = address.Province,
+                    Country = address.Country,
+                    Status = address.Status,
+                    CreatedDate = address.CreatedDate,
+                    ModifiedDate = address.ModifiedDate
+                };
+
+                await db.Address_TRN.AddAsync(trn);
+
+                result += await db.SaveChangesAsync();
+
+                number++;
+            }
+
+            if (result != addresses.Count())
+                throw new APIException(string.Format(Constants.ERROR_INSERT, Constants.MODEL_CONTACTS_TRN));
         }
 
         public async Task<string> InsertRequestAsync(SMDbContext db, RequestBase requestInfo)
