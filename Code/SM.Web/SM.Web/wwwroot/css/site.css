@@ -1,18 +1,28 @@
 html {
-  font-size: 14px;
+    position: relative;
+    min-height: 100%;
+    font-size: 14px;
+}
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.custom-page-header {
+    display:flex;
+}
+
+.custom-page-header .info .title {
+    font-size: 25px;
+    font-weight: bold;
+}
+.custom-page-header .info .description {
+    margin-top: -5px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
   html {
     font-size: 16px;
   }
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
 }

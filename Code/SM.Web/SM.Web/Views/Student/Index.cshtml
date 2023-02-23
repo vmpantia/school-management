@@ -3,17 +3,45 @@
 }
 
 <div class="container">
-
     <div class="custom-page-header">
-        <div class="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-              <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
-            </svg>
-        </div>
         <div class="info">
-            <span class="title">Student</span>
-            <span class="title">In this page you can view all the Students that is stored in the System.</span>
+            <div class="title">Student</div>
+            <div class="description">In this page you can view all the Students that is stored in the System.</div>
         </div>
     </div>
 
+    <table class="table table-sm table-striped"
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Birthdate</th>
+                <th>Contact No.</th>
+                <th>Email Address</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th>Modified Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <input type="checkbox" class="form-control" />
+                </td>
+                <td>Vincent Pantia</td>
+                <td>07-D Durian St. Area 9 Brgy. Pasong Tamo Quezon City</td>
+                <td>06/12/1999</td>
+                <td>09688718677</td>
+                <td>vincent.m.pantia@gmail.com</td>
+                <td>Active</td>
+                <td>02/23/2023</td>
+                <td>N/A</td>
+                <td>
+                    <button class="btn-primary">View</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
