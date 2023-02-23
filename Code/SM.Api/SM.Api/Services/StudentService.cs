@@ -6,6 +6,8 @@ using SM.Api.DataAccess;
 using SM.Api.DataAccess.Models;
 using SM.Api.DataAccess.Models.Transaction;
 using SM.Api.Exceptions;
+using SM.Api.Models;
+using SM.Api.Models.enums;
 using SM.Api.Models.Requests;
 using System.Net;
 
@@ -21,7 +23,29 @@ namespace SM.Api.Services
             _common = common;
         }
 
-        public async Task<string> SaveStudent(SaveStudentRequest request)
+        public async Task<IEnumerable<StudentInformation>> GetStudentsAsync()
+        {
+            var students = await _db.Students.ToListAsync();
+
+            var newStudents = new List<StudentInformation>();
+
+            foreach(var student in students)
+            {
+                newStudents.Add(new StudentInformation
+                {
+                    student = student,
+                    CellphoneNo = await _common.GetContactByTypeAsync(student.InternalID, ContactType.CELLPHONE_NO),
+                    EmailAddress = await _common.GetContactByTypeAsync(student.InternalID, ContactType.EMAILADDRESS),
+                    PresentAddress = await _common.GetAddressyTypeAsync(student.InternalID, AddressType.PRESENT),
+                    PermanentAddress = await _common.GetAddressyTypeAsync(student.InternalID, AddressType.PERMANENT),
+                    ProvincialAddress = await _common.GetAddressyTypeAsync(student.InternalID, AddressType.PROVINCIAL)
+                });
+            }
+
+            return newStudents;
+        }
+
+        public async Task<string> SaveStudentAsync(SaveStudentRequest request)
         {
             if (request == null)
                 throw new APIException(string.Format(Constants.ERROR_REQUEST_NULL, Constants.MODEL_STUDENT));

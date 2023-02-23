@@ -5,12 +5,30 @@ using SM.Api.DataAccess;
 using SM.Api.DataAccess.Models;
 using SM.Api.DataAccess.Models.Transaction;
 using SM.Api.Exceptions;
+using SM.Api.Models.enums;
 using SM.Api.Models.Requests;
 
 namespace SM.Api.Services
 {
     public class CommonService : ICommonService
     {
+        private readonly SMDbContext _db;
+        public CommonService(SMDbContext context)
+        {
+            _db = context;
+        }
+
+        #region Contact
+        public async Task<string> GetContactByTypeAsync(Guid relationID, ContactType type)
+        {
+            var contact = await _db.Contacts.Where(data => data.RelationID == relationID &&
+                                                           data.Type == (int)type &&
+                                                           data.Status == (int)Status.ENABLED)
+                                            .ToListAsync();
+
+            return contact == null || contact.Count == 0 ? Constants.NA : contact.First().Value;
+        }
+
         public async Task InsertContactsAsync(SMDbContext db, Guid relationID, List<Contact> contacts)
         {
             if (contacts == null)
@@ -103,6 +121,25 @@ namespace SM.Api.Services
 
             if (result != contacts.Count())
                 throw new APIException(string.Format(Constants.ERROR_INSERT, Constants.MODEL_CONTACTS_TRN));
+        }
+        #endregion
+
+
+        #region Address
+        public async Task<string> GetAddressyTypeAsync(Guid relationID, AddressType type)
+        {
+            var address = await _db.Addresses.Where(data => data.RelationID == relationID &&
+                                                            data.Type == (int)type &&
+                                                            data.Status == (int)Status.ENABLED)
+                                             .ToListAsync();
+
+            return address == null || address.Count == 0 ? Constants.NA : string.Concat(address.First().Line1,
+                                                                                        address.First().Line2,
+                                                                                        address.First().Barangay,
+                                                                                        address.First().City,
+                                                                                        address.First().Province,
+                                                                                        address.First().Country,
+                                                                                        address.First().ZipCode);
         }
 
         public async Task InsertAddressesAsync(SMDbContext db, Guid relationID, List<Address> addresses)
@@ -210,7 +247,9 @@ namespace SM.Api.Services
             if (result != addresses.Count())
                 throw new APIException(string.Format(Constants.ERROR_INSERT, Constants.MODEL_CONTACTS_TRN));
         }
+        #endregion
 
+        #region Request
         public async Task<string> InsertRequestAsync(SMDbContext db, RequestBase requestInfo)
         {
             var newRequest = new Request
@@ -251,5 +290,6 @@ namespace SM.Api.Services
 
             return string.Format(Constants.FORMAT_REQUEST_ID, Globals.EXEC_REQ_DATE, newSuffix);
         }
+        #endregion
     }
 }

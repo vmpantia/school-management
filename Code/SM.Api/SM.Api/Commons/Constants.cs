@@ -4,6 +4,8 @@
     {
         #region Commons
         public const char CHAR_ZERO = '0';
+        public const string NA = "N/A";
+        public const string FORMAT_FULLNAME = "{0}, {1}";
         #endregion
 
         #region FunctionIDs
